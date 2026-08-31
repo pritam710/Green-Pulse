@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="flex gap-4">
-            <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-2 rounded-xl font-bold shadow-sm flex items-center"><i class="fa-solid fa-circle-exclamation mr-2"></i>3 Active Reports</div>
+            <div id="report-counter" class="bg-red-50 border border-red-200 text-red-700 px-5 py-2 rounded-xl font-bold shadow-sm flex items-center"><i class="fa-solid fa-circle-exclamation mr-2"></i>3 Active Reports</div>
             <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-2 rounded-xl font-bold shadow-sm flex items-center"><i class="fa-solid fa-truck-fast mr-2"></i>12 Fleet Active</div>
         </div>
     </header>
@@ -47,6 +47,18 @@
         L.marker([17.6610, 75.9080], {icon: redIcon}).addTo(map).bindPopup("<div style='text-align:center;'><b>Critical Priority</b><br>Overflowing mixed waste.<br><span style='color:red;'>Status: Unassigned</span></div>");
         L.marker([17.6550, 75.9120], {icon: redIcon}).addTo(map).bindPopup("<div style='text-align:center;'><b>High Priority</b><br>Illegal dump site.<br><span style='color:orange;'>Status: Pending</span></div>");
         L.marker([17.6580, 75.9010], {icon: greenIcon}).addTo(map).bindPopup("<div style='text-align:center;'><b>Sanitation Fleet 4</b><br>Status: En route to task.</div>");
+        // --- SIMULATED BACKEND INTEGRATION ---
+        // 1. Pull dynamic reports from Local Storage
+        let reports = JSON.parse(localStorage.getItem('greenPulseReports')) || [];
+        
+        // 2. Update the counter at the top of the screen
+        document.getElementById('report-counter').innerHTML = `<i class="fa-solid fa-circle-exclamation mr-2"></i>${3 + reports.length} Active Reports`;
+
+        // 3. Drop a new red pin on the map for every user report
+        reports.forEach(report => {
+            L.marker([report.lat, report.lng], {icon: redIcon}).addTo(map)
+             .bindPopup(`<div style='text-align:center;'><b>Live Citizen Report</b><br>${report.desc}<br><span style='color:red;'>Status: Unassigned</span></div>`);
+        });
     </script>
 </body>
 </html>

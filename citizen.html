@@ -24,7 +24,7 @@
     <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl">
             <h3 class="text-xl font-bold text-red-600 mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Report Issue</h3>
-            <textarea class="w-full border-2 border-gray-200 rounded-xl p-3 mb-4 text-sm focus:outline-none focus:border-red-400" rows="3" placeholder="Describe the issue (e.g., Overflowing mixed waste)"></textarea>
+            <textarea id="report-desc" class="w-full border-2 border-gray-200 rounded-xl p-3 mb-4 text-sm focus:outline-none focus:border-red-400" rows="3" placeholder="Describe the issue (e.g., Overflowing mixed waste)"></textarea>
             <div class="flex gap-3">
                 <button onclick="toggleModal('report-modal')" class="bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-bold flex-1">Cancel</button>
                 <button onclick="submitReport()" class="bg-red-600 text-white px-4 py-3 rounded-xl font-bold flex-1">Submit</button>
@@ -123,7 +123,28 @@
 
     <script>
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        function submitReport() { toggleModal('report-modal'); alert("Issue successfully routed to nearest fleet via spatial routing algorithm!"); }
+        
+        function submitReport() { 
+            // 1. Get what the user typed
+            const desc = document.getElementById('report-desc').value || "Unspecified waste issue";
+            
+            // 2. Create a simulated report object with random Solapur coordinates
+            const newReport = {
+                desc: desc,
+                lat: 17.6599 + (Math.random() - 0.5) * 0.02, 
+                lng: 75.9064 + (Math.random() - 0.5) * 0.02
+            };
+            
+            // 3. Save to browser storage
+            let reports = JSON.parse(localStorage.getItem('greenPulseReports')) || [];
+            reports.push(newReport);
+            localStorage.setItem('greenPulseReports', JSON.stringify(reports));
+            
+            // 4. Close modal and confirm
+            document.getElementById('report-desc').value = ""; // clear text
+            toggleModal('report-modal'); 
+            alert("Issue saved to database! Check the Admin map to see your live report."); 
+        }
     </script>
 </body>
 </html>
